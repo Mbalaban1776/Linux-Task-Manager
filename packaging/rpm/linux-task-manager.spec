@@ -4,7 +4,7 @@ Release:        1%{?dist}
 Summary:        A system task manager for Linux
 
 License:        MIT
-URL:            https://github.com/mustafabalaban/Linux-Task-Manager
+URL:            https://github.com/Mbalaban1776/Linux-Task-Manager
 Source0:        %{name}-%{version}.tar.gz
 
 BuildArch:      noarch
@@ -46,5 +46,5 @@ install -m 644 packaging/linux-task-manager.desktop %{buildroot}%{_datadir}/appl
 %{_datadir}/applications/%{name}.desktop
 
 %changelog
-* Thu May 01 2025 Mustafa Balaban <your.email@example.com> - 0.1.0-1
+* Thu May 01 2025 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.1.0-1
 - Initial package

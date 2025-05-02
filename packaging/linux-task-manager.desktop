@@ -5,6 +5,6 @@ Exec=linux-task-manager
 Icon=utilities-system-monitor
 Terminal=false
 Type=Application
-Categories=System;Monitor;
+Categories=System;Monitor;Utility;
 Keywords=system;process;task;monitor;cpu;memory;
 StartupNotify=true
