@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Linux Task Manager
+Comment=Monitor and manage system processes
+Exec=linux-task-manager
+Icon=utilities-system-monitor
+Terminal=false
+Type=Application
+Categories=System;Monitor;
+Keywords=system;process;task;monitor;cpu;memory;
+StartupNotify=true
