@@ -2,7 +2,7 @@
 Name=Linux Task Manager
 Comment=Monitor and manage system processes
 Exec=linux-task-manager
-Icon=utilities-system-monitor
+Icon=linux-task-manager
 Terminal=false
 Type=Application
 Categories=System;Monitor;Utility;

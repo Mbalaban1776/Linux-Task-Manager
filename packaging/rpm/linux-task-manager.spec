@@ -29,6 +29,14 @@ It provides a user-friendly interface to view and manage running processes.
 mkdir -p %{buildroot}%{_bindir}
 mkdir -p %{buildroot}%{_datadir}/applications
 mkdir -p %{buildroot}%{_datadir}/%{name}
+mkdir -p %{buildroot}%{_datadir}/icons/hicolor/scalable/apps
+mkdir -p %{buildroot}%{_datadir}/icons/hicolor/16x16/apps
+mkdir -p %{buildroot}%{_datadir}/icons/hicolor/22x22/apps
+mkdir -p %{buildroot}%{_datadir}/icons/hicolor/32x32/apps
+mkdir -p %{buildroot}%{_datadir}/icons/hicolor/48x48/apps
+mkdir -p %{buildroot}%{_datadir}/icons/hicolor/64x64/apps
+mkdir -p %{buildroot}%{_datadir}/icons/hicolor/128x128/apps
+mkdir -p %{buildroot}%{_datadir}/icons/hicolor/256x256/apps
 
 # Install the main script
 install -m 755 src/linux-task-manager %{buildroot}%{_bindir}/%{name}
@@ -39,12 +47,44 @@ cp -r src/* %{buildroot}%{_datadir}/%{name}/
 # Install the desktop file
 install -m 644 packaging/linux-task-manager.desktop %{buildroot}%{_datadir}/applications/%{name}.desktop
 
+# Install icons
+install -m 644 assets/icons/hicolor/scalable/apps/linux-task-manager.svg %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
+install -m 644 assets/icons/hicolor/16x16/apps/linux-task-manager.png %{buildroot}%{_datadir}/icons/hicolor/16x16/apps/%{name}.png
+install -m 644 assets/icons/hicolor/22x22/apps/linux-task-manager.png %{buildroot}%{_datadir}/icons/hicolor/22x22/apps/%{name}.png
+install -m 644 assets/icons/hicolor/32x32/apps/linux-task-manager.png %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/%{name}.png
+install -m 644 assets/icons/hicolor/48x48/apps/linux-task-manager.png %{buildroot}%{_datadir}/icons/hicolor/48x48/apps/%{name}.png
+install -m 644 assets/icons/hicolor/64x64/apps/linux-task-manager.png %{buildroot}%{_datadir}/icons/hicolor/64x64/apps/%{name}.png
+install -m 644 assets/icons/hicolor/128x128/apps/linux-task-manager.png %{buildroot}%{_datadir}/icons/hicolor/128x128/apps/%{name}.png
+install -m 644 assets/icons/hicolor/256x256/apps/linux-task-manager.png %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/%{name}.png
+
 %files
 %license LICENSE
 %{_bindir}/%{name}
 %{_datadir}/%{name}
 %{_datadir}/applications/%{name}.desktop
+%{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
+%{_datadir}/icons/hicolor/16x16/apps/%{name}.png
+%{_datadir}/icons/hicolor/22x22/apps/%{name}.png
+%{_datadir}/icons/hicolor/32x32/apps/%{name}.png
+%{_datadir}/icons/hicolor/48x48/apps/%{name}.png
+%{_datadir}/icons/hicolor/64x64/apps/%{name}.png
+%{_datadir}/icons/hicolor/128x128/apps/%{name}.png
+%{_datadir}/icons/hicolor/256x256/apps/%{name}.png
+
+%post
+/usr/bin/update-desktop-database &> /dev/null || :
+/bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
+
+%postun
+/usr/bin/update-desktop-database &> /dev/null || :
+if [ $1 -eq 0 ] ; then
+    /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null
+    /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+fi
+
+%posttrans
+/usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
-* Thu May 01 2025 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.1.0-1
+* Sat May 03 2025 Mustafa Balaban <your.email@example.com> - 0.1.0-1
 - Initial package
