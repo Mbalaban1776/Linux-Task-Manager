@@ -1,5 +1,7 @@
 [Desktop Entry]
+Version=1.0
 Name=Linux Task Manager
+GenericName=Task Manager
 Comment=Monitor and manage system processes
 Exec=linux-task-manager
 Icon=linux-task-manager

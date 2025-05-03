@@ -4,7 +4,7 @@ Release:        1%{?dist}
 Summary:        A system task manager for Linux
 
 License:        MIT
-URL:            https://github.com/mustafabalaban/Linux-Task-Manager
+URL:            https://github.com/Mbalaban1776/Linux-Task-Manager
 Source0:        %{name}-%{version}.tar.gz
 
 BuildArch:      noarch
@@ -93,5 +93,5 @@ fi
 /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
-* Sat May 03 2025 Mustafa Balaban <your.email@example.com> - 0.1.0-1
+* Sat May 03 2025 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.1.0-1
 - Initial package

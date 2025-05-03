@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>com.github.mustafabalaban.linux-task-manager</id>
+  <id>linux-task-manager.desktop</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>MIT</project_license>
   <name>Linux Task Manager</name>
@@ -23,13 +23,13 @@
   <screenshots>
     <screenshot type="default">
       <caption>Main window showing process list</caption>
-      <image>https://raw.githubusercontent.com/mustafabalaban/Linux-Task-Manager/main/screenshots/main.png</image>
+      <image>https://raw.githubusercontent.com/Mbalaban1776/Linux-Task-Manager/main/screenshots/main.png</image>
     </screenshot>
   </screenshots>
-  <url type="homepage">https://github.com/mustafabalaban/Linux-Task-Manager</url>
-  <url type="bugtracker">https://github.com/mustafabalaban/Linux-Task-Manager/issues</url>
+  <url type="homepage">https://github.com/Mbalaban1776/Linux-Task-Manager</url>
+  <url type="bugtracker">https://github.com/Mbalaban1776/Linux-Task-Manager/issues</url>
   <developer_name>Mustafa Balaban</developer_name>
-  <update_contact>your.email@example.com</update_contact>
+  <update_contact>mustafabalaban46@gmail.com</update_contact>
   <releases>
     <release version="0.1.0" date="2025-05-03">
       <description>
