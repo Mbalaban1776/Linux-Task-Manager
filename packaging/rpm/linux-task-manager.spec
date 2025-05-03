@@ -4,7 +4,7 @@ Release:        1%{?dist}
 Summary:        A system task manager for Linux
 
 License:        MIT
-URL:            https://github.com/Mbalaban1776/Linux-Task-Manager
+URL:            https://github.com/mustafabalaban/Linux-Task-Manager
 Source0:        %{name}-%{version}.tar.gz
 
 BuildArch:      noarch
@@ -29,6 +29,7 @@ It provides a user-friendly interface to view and manage running processes.
 mkdir -p %{buildroot}%{_bindir}
 mkdir -p %{buildroot}%{_datadir}/applications
 mkdir -p %{buildroot}%{_datadir}/%{name}
+mkdir -p %{buildroot}%{_datadir}/metainfo
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/scalable/apps
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/16x16/apps
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/22x22/apps
@@ -47,6 +48,9 @@ cp -r src/* %{buildroot}%{_datadir}/%{name}/
 # Install the desktop file
 install -m 644 packaging/linux-task-manager.desktop %{buildroot}%{_datadir}/applications/%{name}.desktop
 
+# Install AppStream metadata
+install -m 644 packaging/linux-task-manager.appdata.xml %{buildroot}%{_datadir}/metainfo/%{name}.appdata.xml
+
 # Install icons
 install -m 644 assets/icons/hicolor/scalable/apps/linux-task-manager.svg %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
 install -m 644 assets/icons/hicolor/16x16/apps/linux-task-manager.png %{buildroot}%{_datadir}/icons/hicolor/16x16/apps/%{name}.png
@@ -62,6 +66,7 @@ install -m 644 assets/icons/hicolor/256x256/apps/linux-task-manager.png %{buildr
 %{_bindir}/%{name}
 %{_datadir}/%{name}
 %{_datadir}/applications/%{name}.desktop
+%{_datadir}/metainfo/%{name}.appdata.xml
 %{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
 %{_datadir}/icons/hicolor/16x16/apps/%{name}.png
 %{_datadir}/icons/hicolor/22x22/apps/%{name}.png
@@ -74,12 +79,14 @@ install -m 644 assets/icons/hicolor/256x256/apps/linux-task-manager.png %{buildr
 %post
 /usr/bin/update-desktop-database &> /dev/null || :
 /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
+/usr/bin/update-mime-database %{_datadir}/mime &> /dev/null || :
 
 %postun
 /usr/bin/update-desktop-database &> /dev/null || :
 if [ $1 -eq 0 ] ; then
     /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null
     /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+    /usr/bin/update-mime-database %{_datadir}/mime &> /dev/null || :
 fi
 
 %posttrans
