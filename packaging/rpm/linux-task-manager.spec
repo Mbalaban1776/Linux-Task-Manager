@@ -97,7 +97,7 @@ fi
 /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
-* Sun May 05 2025 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.0-1
+* Sun May 04 2025 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.0-1
 - Added dark mode toggle
 - Added icons to navigation tabs
 - Made End Process button red with white text
