@@ -4,10 +4,12 @@ A lightweight system task manager for Linux, built with Python and GTK.
 
 ## Features
 
-- Process monitoring with real-time updates
+- Real-time process monitoring with CPU and memory usage
 - System resource usage graphs (CPU, memory, network, disk)
 - File system monitoring
-- Process management capabilities
+- Process management capabilities (end processes)
+- Dark mode support
+- Responsive UI design
 
 ## Installation
 

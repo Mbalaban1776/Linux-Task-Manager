@@ -17,6 +17,8 @@
       <li>CPU, memory, network, and disk usage graphs</li>
       <li>Process management (end processes)</li>
       <li>Customizable refresh rates</li>
+      <li>Dark mode support</li>
+      <li>Responsive UI design</li>
     </ul>
   </description>
   <launchable type="desktop-id">linux-task-manager.desktop</launchable>
@@ -31,6 +33,19 @@
   <developer_name>Mustafa Balaban</developer_name>
   <update_contact>mustafabalaban46@gmail.com</update_contact>
   <releases>
+    <release version="0.2.0" date="2025-05-05">
+      <description>
+        <p>New features and improvements:</p>
+        <ul>
+          <li>Added dark mode toggle button</li>
+          <li>Added icons to navigation tabs</li>
+          <li>Improved process list display with proper CPU usage</li>
+          <li>Made End Process button red with white text for better visibility</li>
+          <li>Enhanced column responsiveness</li>
+          <li>Fixed various UI issues</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.1.0" date="2025-05-03">
       <description>
         <p>Initial release with basic functionality:</p>

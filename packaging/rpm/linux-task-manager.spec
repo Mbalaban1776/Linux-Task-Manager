@@ -1,5 +1,5 @@
 Name:           linux-task-manager
-Version:        0.1.0
+Version:        0.2.0
 Release:        1%{?dist}
 Summary:        A system task manager for Linux
 
@@ -97,5 +97,13 @@ fi
 /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Sun May 05 2025 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.0-1
+- Added dark mode toggle
+- Added icons to navigation tabs
+- Made End Process button red with white text
+- Improved process list with proportional columns
+- Fixed CPU usage display
+- Enhanced UI responsiveness
+
 * Sat May 03 2025 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.1.0-1
 - Initial package
