@@ -1,12 +1,12 @@
 [Desktop Entry]
 Version=1.0
+Type=Application
 Name=Linux Task Manager
 GenericName=Task Manager
 Comment=Monitor and manage system processes
 Exec=linux-task-manager
 Icon=linux-task-manager
 Terminal=false
-Type=Application
 Categories=System;Monitor;Utility;GTK;
 Keywords=system;process;task;monitor;cpu;memory;
 StartupNotify=true

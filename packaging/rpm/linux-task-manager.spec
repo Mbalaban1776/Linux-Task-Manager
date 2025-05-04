@@ -9,6 +9,8 @@ Source0:        %{name}-%{version}.tar.gz
 
 BuildArch:      noarch
 BuildRequires:  python3-devel
+BuildRequires:  desktop-file-utils
+BuildRequires:  libappstream-glib
 Requires:       python3
 Requires:       python3-psutil
 Requires:       python3-gobject
@@ -46,7 +48,7 @@ install -m 755 src/linux-task-manager %{buildroot}%{_bindir}/%{name}
 cp -r src/* %{buildroot}%{_datadir}/%{name}/
 
 # Install the desktop file
-install -m 644 packaging/linux-task-manager.desktop %{buildroot}%{_datadir}/applications/%{name}.desktop
+desktop-file-install --dir=%{buildroot}%{_datadir}/applications packaging/linux-task-manager.desktop
 
 # Install AppStream metadata
 install -m 644 packaging/linux-task-manager.appdata.xml %{buildroot}%{_datadir}/metainfo/%{name}.appdata.xml
@@ -60,6 +62,10 @@ install -m 644 assets/icons/hicolor/48x48/apps/linux-task-manager.png %{buildroo
 install -m 644 assets/icons/hicolor/64x64/apps/linux-task-manager.png %{buildroot}%{_datadir}/icons/hicolor/64x64/apps/%{name}.png
 install -m 644 assets/icons/hicolor/128x128/apps/linux-task-manager.png %{buildroot}%{_datadir}/icons/hicolor/128x128/apps/%{name}.png
 install -m 644 assets/icons/hicolor/256x256/apps/linux-task-manager.png %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/%{name}.png
+
+%check
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
+appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/%{name}.appdata.xml
 
 %files
 %license LICENSE
@@ -79,14 +85,12 @@ install -m 644 assets/icons/hicolor/256x256/apps/linux-task-manager.png %{buildr
 %post
 /usr/bin/update-desktop-database &> /dev/null || :
 /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-/usr/bin/update-mime-database %{_datadir}/mime &> /dev/null || :
 
 %postun
 /usr/bin/update-desktop-database &> /dev/null || :
 if [ $1 -eq 0 ] ; then
     /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null
     /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-    /usr/bin/update-mime-database %{_datadir}/mime &> /dev/null || :
 fi
 
 %posttrans
