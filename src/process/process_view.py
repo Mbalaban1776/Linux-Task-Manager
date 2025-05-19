@@ -9,11 +9,6 @@ import signal
 class ProcessesTab(Gtk.Box):
     def __init__(self):
         super().__init__(orientation=Gtk.Orientation.VERTICAL, spacing=6)
-        app_window = self.get_toplevel()
-        if isinstance(app_window, Gtk.Window):
-            app_window.maximize()
-            settings = Gtk.Settings.get_default()
-            settings.set_property("gtk-application-prefer-dark-theme", True)
         self.set_margin_top(10)
         self.set_margin_bottom(10)
         self.set_margin_start(10)
@@ -26,8 +21,6 @@ class ProcessesTab(Gtk.Box):
         self.process_store = Gtk.TreeStore(str, float, str, float, str, int, bool)
 
         self.process_view = Gtk.TreeView(model=self.process_store)
-        self.process_view.connect("row-expanded", self.on_row_expanded)
-        self.process_view.connect("row-collapsed", self.on_row_collapsed)
         self.process_view.set_rules_hint(True)
         self.selection = self.process_view.get_selection()
         self.selection.set_mode(Gtk.SelectionMode.SINGLE)
@@ -81,36 +74,33 @@ class ProcessesTab(Gtk.Box):
 
         self.end_process_button = Gtk.Button(label="End Process")
         self.end_process_button.set_sensitive(False)
-        self.end_process_button.get_style_context().add_class("end-process-button")
+        self.end_process_button.set_name("end_process_button")
         self.end_process_button.connect("clicked", self.on_end_process_clicked)
         controls_box.pack_start(self.end_process_button, False, False, 0)
 
         css_provider = Gtk.CssProvider()
         css_provider.load_from_data(b"""
-button.end-process-button {
+GtkButton#end_process_button {
     background-image: none;
     background-color: #ed333b;
     color: white;
     border-radius: 6px;
     border: 1px solid #c01c28;
 }
-button.end-process-button:hover {
-    background-color: #f03939;
-}
-button.end-process-button:active {
+GtkButton#end_process_button:active {
     background-color: #c01c28;
 }
-button.end-process-button:disabled {
+GtkButton#end_process_button:hover {
+    background-color: #f03939;
+}
+GtkButton#end_process_button:disabled {
     background-color: #ed333b;
     color: white;
-    opacity: 0.4;
+    opacity: 0.5;
 }
 """)
         screen = Gdk.Screen.get_default()
         Gtk.StyleContext.add_provider_for_screen(screen, css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
-
-        self.apps_expanded = True
-        self.background_expanded = True
 
         self.initialize_cpu_tracking()
         self.update_process_list()
@@ -141,6 +131,9 @@ button.end-process-button:disabled {
             selected_pid = model[iter][5]
 
         self.process_store.clear()
+
+        app_count = 0
+        bg_count = 0
         apps_iter = self.process_store.append(None, ["Apps", 0.0, "", 0.0, "", 0, True])
         background_iter = self.process_store.append(None, ["Background processes", 0.0, "", 0.0, "", 0, True])
 
@@ -153,20 +146,22 @@ button.end-process-button:disabled {
                 cpu = proc.cpu_percent(interval=None)
                 cpu_str = f"{cpu:.1f} %"
                 row = [name, cpu, cpu_str, mem, mem_str, pid, False]
-                parent = apps_iter if self.is_app(proc) else background_iter
-                self.process_store.append(parent, row)
+                if self.is_app(proc):
+                    app_count += 1
+                    self.process_store.append(apps_iter, row)
+                else:
+                    bg_count += 1
+                    self.process_store.append(background_iter, row)
             except:
                 pass
 
-        if self.apps_expanded:
-            self.process_view.expand_row(self.process_store.get_path(apps_iter), False)
-        else:
-            self.process_view.collapse_row(self.process_store.get_path(apps_iter))
+        self.process_store.set_value(apps_iter, 0, f"Apps ({app_count})")
+        self.process_store.set_value(background_iter, 0, f"Background processes ({bg_count})")
 
-        if self.background_expanded:
+        if apps_iter:
+            self.process_view.expand_row(self.process_store.get_path(apps_iter), False)
+        if background_iter:
             self.process_view.expand_row(self.process_store.get_path(background_iter), False)
-        else:
-            self.process_view.collapse_row(self.process_store.get_path(background_iter))
 
         def restore_scroll():
             vadj.set_value(scroll_value)
@@ -190,23 +185,7 @@ button.end-process-button:disabled {
         model, treeiter = selection.get_selected()
         if treeiter is not None:
             is_header = model.get_value(treeiter, 6)
-            enable_button = not is_header
-            self.end_process_button.set_sensitive(enable_button)
-            self.end_process_button.get_style_context().invalidate()
-
-    def on_row_expanded(self, tree_view, iter, path):
-        if path.get_depth() == 1:
-            if path.get_indices()[0] == 0:
-                self.apps_expanded = True
-            elif path.get_indices()[0] == 1:
-                self.background_expanded = True
-
-    def on_row_collapsed(self, tree_view, iter, path):
-        if path.get_depth() == 1:
-            if path.get_indices()[0] == 0:
-                self.apps_expanded = False
-            elif path.get_indices()[0] == 1:
-                self.background_expanded = False
+            self.end_process_button.set_sensitive(not is_header)
 
     def on_end_process_clicked(self, button):
         model, treeiter = self.selection.get_selected()
@@ -227,13 +206,3 @@ button.end-process-button:disabled {
                 dialog.format_secondary_text("You don't have permission to end this process.")
                 dialog.run()
                 dialog.destroy()
-
-    def toggle_row_expansion(self, path):
-        if path.get_indices()[0] == 0:
-            self.apps_expanded = not self.process_view.row_expanded(path)
-        elif path.get_indices()[0] == 1:
-            self.background_expanded = not self.process_view.row_expanded(path)
-
-        self.process_view.collapse_row(path) if not self.process_view.row_expanded(path) else self.process_view.expand_row(path, False)
-
-        return True

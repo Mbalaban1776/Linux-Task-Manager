@@ -24,7 +24,7 @@ class TaskManagerWindow(Gtk.ApplicationWindow):
 
         self.dark_mode_button = Gtk.Button()
         self.dark_mode_button.set_relief(Gtk.ReliefStyle.NONE)
-        icon_name = "weather-clear-night-symbolic" if self.dark_mode else "weather-clear-symbolic"
+        icon_name = "weather-clear-symbolic" if self.dark_mode else "weather-clear-night-symbolic"
         icon = Gtk.Image.new_from_icon_name(icon_name, Gtk.IconSize.BUTTON)
         self.dark_mode_button.set_image(icon)
         self.dark_mode_button.set_tooltip_text("Toggle Dark Mode")
@@ -55,7 +55,7 @@ class TaskManagerWindow(Gtk.ApplicationWindow):
 
         self.buttons = []
 
-        # Resources tab button
+        # Resources button
         resources_button = Gtk.ToggleButton()
         resources_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
         resources_icon = Gtk.Image.new_from_icon_name("speedometer-symbolic", Gtk.IconSize.BUTTON)
@@ -67,7 +67,7 @@ class TaskManagerWindow(Gtk.ApplicationWindow):
         self.buttons.append(resources_button)
         switcher_box.pack_start(resources_button, False, False, 0)
 
-        # Processes tab button
+        # Processes button
         processes_button = Gtk.ToggleButton()
         processes_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
         processes_icon = Gtk.Image.new_from_icon_name("view-list-symbolic", Gtk.IconSize.BUTTON)
@@ -79,14 +79,14 @@ class TaskManagerWindow(Gtk.ApplicationWindow):
         self.buttons.append(processes_button)
         switcher_box.pack_start(processes_button, False, False, 0)
 
-        # Add to layout
+        # Add layout to window
         main_box.pack_start(switcher_box, False, False, 0)
         main_box.pack_start(Gtk.Separator(), False, False, 0)
         main_box.pack_start(self.stack, True, True, 0)
 
         self.stack.connect("notify::visible-child-name", self.on_stack_changed)
 
-        # ✅ Set Processes tab as default (deferred for GTK to honor)
+        # ✅ Set Processes tab after full GTK init
         GLib.idle_add(self.stack.set_visible_child_name, "processes")
         GLib.idle_add(processes_button.set_active, True)
 
@@ -94,7 +94,9 @@ class TaskManagerWindow(Gtk.ApplicationWindow):
         settings = Gtk.Settings.get_default()
         self.dark_mode = not self.dark_mode
         settings.set_property("gtk-application-prefer-dark-theme", self.dark_mode)
-        icon_name = "weather-clear-night-symbolic" if self.dark_mode else "weather-clear-symbolic"
+
+        # ✅ Show icon that represents what theme will come next
+        icon_name = "weather-clear-symbolic" if self.dark_mode else "weather-clear-night-symbolic"
         icon = Gtk.Image.new_from_icon_name(icon_name, Gtk.IconSize.BUTTON)
         button.set_image(icon)
 
