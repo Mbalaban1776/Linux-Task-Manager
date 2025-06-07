@@ -1,5 +1,5 @@
 Name:           linux-task-manager
-Version:        0.2.0
+Version:        0.2.3
 Release:        1%{?dist}
 Summary:        A system task manager for Linux
 
@@ -54,14 +54,14 @@ desktop-file-install --dir=%{buildroot}%{_datadir}/applications packaging/linux-
 install -m 644 packaging/linux-task-manager.appdata.xml %{buildroot}%{_datadir}/metainfo/%{name}.appdata.xml
 
 # Install icons
-install -m 644 assets/icons/hicolor/scalable/apps/linux-task-manager.svg %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
-install -m 644 assets/icons/hicolor/16x16/apps/linux-task-manager.png %{buildroot}%{_datadir}/icons/hicolor/16x16/apps/%{name}.png
-install -m 644 assets/icons/hicolor/22x22/apps/linux-task-manager.png %{buildroot}%{_datadir}/icons/hicolor/22x22/apps/%{name}.png
-install -m 644 assets/icons/hicolor/32x32/apps/linux-task-manager.png %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/%{name}.png
-install -m 644 assets/icons/hicolor/48x48/apps/linux-task-manager.png %{buildroot}%{_datadir}/icons/hicolor/48x48/apps/%{name}.png
-install -m 644 assets/icons/hicolor/64x64/apps/linux-task-manager.png %{buildroot}%{_datadir}/icons/hicolor/64x64/apps/%{name}.png
-install -m 644 assets/icons/hicolor/128x128/apps/linux-task-manager.png %{buildroot}%{_datadir}/icons/hicolor/128x128/apps/%{name}.png
-install -m 644 assets/icons/hicolor/256x256/apps/linux-task-manager.png %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/%{name}.png
+install -m 644 assets/icons/hicolor/scalable/apps/ltm-icon.svg %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/ltm-icon.svg
+install -m 644 assets/icons/hicolor/16x16/apps/ltm-icon.png %{buildroot}%{_datadir}/icons/hicolor/16x16/apps/ltm-icon.png
+install -m 644 assets/icons/hicolor/22x22/apps/ltm-icon.png %{buildroot}%{_datadir}/icons/hicolor/22x22/apps/ltm-icon.png
+install -m 644 assets/icons/hicolor/32x32/apps/ltm-icon.png %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/ltm-icon.png
+install -m 644 assets/icons/hicolor/48x48/apps/ltm-icon.png %{buildroot}%{_datadir}/icons/hicolor/48x48/apps/ltm-icon.png
+install -m 644 assets/icons/hicolor/64x64/apps/ltm-icon.png %{buildroot}%{_datadir}/icons/hicolor/64x64/apps/ltm-icon.png
+install -m 644 assets/icons/hicolor/128x128/apps/ltm-icon.png %{buildroot}%{_datadir}/icons/hicolor/128x128/apps/ltm-icon.png
+install -m 644 assets/icons/hicolor/256x256/apps/ltm-icon.png %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/ltm-icon.png
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
@@ -73,14 +73,14 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/%{name}.a
 %{_datadir}/%{name}
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/metainfo/%{name}.appdata.xml
-%{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
-%{_datadir}/icons/hicolor/16x16/apps/%{name}.png
-%{_datadir}/icons/hicolor/22x22/apps/%{name}.png
-%{_datadir}/icons/hicolor/32x32/apps/%{name}.png
-%{_datadir}/icons/hicolor/48x48/apps/%{name}.png
-%{_datadir}/icons/hicolor/64x64/apps/%{name}.png
-%{_datadir}/icons/hicolor/128x128/apps/%{name}.png
-%{_datadir}/icons/hicolor/256x256/apps/%{name}.png
+%{_datadir}/icons/hicolor/scalable/apps/ltm-icon.svg
+%{_datadir}/icons/hicolor/16x16/apps/ltm-icon.png
+%{_datadir}/icons/hicolor/22x22/apps/ltm-icon.png
+%{_datadir}/icons/hicolor/32x32/apps/ltm-icon.png
+%{_datadir}/icons/hicolor/48x48/apps/ltm-icon.png
+%{_datadir}/icons/hicolor/64x64/apps/ltm-icon.png
+%{_datadir}/icons/hicolor/128x128/apps/ltm-icon.png
+%{_datadir}/icons/hicolor/256x256/apps/ltm-icon.png
 
 %post
 /usr/bin/update-desktop-database &> /dev/null || :
@@ -97,6 +97,15 @@ fi
 /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Mon May 06 2025 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.3-1
+- Renamed icon files to bypass desktop caching issues
+
+* Sun May 05 2025 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.2-1
+- Force icon update attempt
+
+* Sun May 05 2025 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.1-1
+- Updated application icon
+
 * Sun May 04 2025 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.0-1
 - Added dark mode toggle
 - Added icons to navigation tabs
