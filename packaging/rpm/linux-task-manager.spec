@@ -1,5 +1,5 @@
 Name:           linux-task-manager
-Version:        0.2.4
+Version:        0.2.5
 Release:        1%{?dist}
 Summary:        A system task manager for Linux
 
@@ -97,6 +97,14 @@ fi
 /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Tue May 07 2025 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.5-1
+- Added process search functionality with a new search bar.
+- Implemented process icon display for better visual identification.
+- Redesigned header to integrate search and tab switching for a cleaner UI.
+- Improved icon loading logic with better caching and more accurate mappings.
+- Fixed a critical bug preventing sorting of processes by CPU, PID, and Memory.
+- Polished UI details, including button colors and search bar placeholder behavior.
+
 * Mon May 06 2025 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.4-1
 - Use absolute path for icon to work around caching issues
 
