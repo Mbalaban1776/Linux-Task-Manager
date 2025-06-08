@@ -1,10 +1,11 @@
 import gi
 
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, GLib, Gdk
+from gi.repository import Gtk, GLib, Gdk, GdkPixbuf
 import psutil
 import os
 import signal
+from ui.icon_manager import IconManager
 
 class ProcessesTab(Gtk.Box):
     def __init__(self):
@@ -14,13 +15,30 @@ class ProcessesTab(Gtk.Box):
         self.set_margin_start(10)
         self.set_margin_end(10)
 
+        self.icon_manager = IconManager()
+
+        self.placeholder_text = "Search processes and users"
+        self.search_entry = Gtk.SearchEntry()
+        self.search_entry.set_halign(Gtk.Align.CENTER)
+        self.search_entry.set_width_chars(50)
+        self.search_entry.set_margin_bottom(6)
+        self.search_entry.connect("search-changed", self.on_search_changed)
+        self.search_entry.connect("key-press-event", self.on_search_key_press)
+        self.search_entry.connect("focus-out-event", self.on_search_focus_out)
+        self.pack_start(self.search_entry, False, False, 0)
+        self.search_entry.set_no_show_all(True)
+        self.search_entry.hide()
+
         self.scrolled_window = Gtk.ScrolledWindow()
         self.scrolled_window.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         self.pack_start(self.scrolled_window, True, True, 0)
 
-        self.process_store = Gtk.TreeStore(str, float, str, float, str, int, bool)
+        self.process_store = Gtk.TreeStore(str, float, str, float, str, int, bool, str, str)
+        self.filter = self.process_store.filter_new()
+        self.filter.set_visible_func(self.filter_func)
+        self.sortable_model = Gtk.TreeModelSort(model=self.filter)
 
-        self.process_view = Gtk.TreeView(model=self.process_store)
+        self.process_view = Gtk.TreeView(model=self.sortable_model)
         self.process_view.set_rules_hint(True)
         self.selection = self.process_view.get_selection()
         self.selection.set_mode(Gtk.SelectionMode.SINGLE)
@@ -35,17 +53,37 @@ class ProcessesTab(Gtk.Box):
         ]
 
         for title, col_id in self.columns_info:
-            renderer = Gtk.CellRendererText()
-            column = Gtk.TreeViewColumn(title, renderer)
-
             if title == "Name":
-                def name_cell_func(column, cell, model, iter, data=None):
-                    cell.set_property("markup", f"<b>{model[iter][0]}</b>" if model[iter][6] else model[iter][0])
-                column.set_cell_data_func(renderer, name_cell_func)
+                col = Gtk.TreeViewColumn(title)
+                
+                pixbuf_renderer = Gtk.CellRendererPixbuf()
+                col.pack_start(pixbuf_renderer, False)
+                
+                text_renderer = Gtk.CellRendererText()
+                col.pack_start(text_renderer, True)
+                
+                def name_cell_data_func(column, cell, model, iter, data):
+                    is_header = model.get_value(iter, 6)
+                    if is_header:
+                        text_renderer.set_property("markup", model.get_value(iter, 8))
+                        pixbuf_renderer.set_property("icon-name", None)
+                    else:
+                        text_renderer.set_property("markup", "")
+                        text_renderer.set_property("text", model.get_value(iter, 0))
+                        pixbuf_renderer.set_property("icon-name", model.get_value(iter, 7))
+
+                col.set_cell_data_func(text_renderer, name_cell_data_func)
+                
+                self.process_view.append_column(col)
+                self.columns.append(col)
             else:
+                renderer = Gtk.CellRendererText()
+                column = Gtk.TreeViewColumn(title, renderer)
+
                 def make_cell_data_func(col_id):
                     def cell_data_func(column, cell, model, iter, data=None):
-                        if model[iter][6]:
+                        is_header = model[iter][6]
+                        if is_header:
                             cell.set_property("text", "")
                         else:
                             value = model[iter][col_id]
@@ -62,10 +100,10 @@ class ProcessesTab(Gtk.Box):
                 elif title == "PID":
                     column.set_sort_column_id(5)
 
-            column.set_resizable(True)
-            column.set_expand(True)
-            self.process_view.append_column(column)
-            self.columns.append(column)
+                column.set_resizable(True)
+                column.set_expand(True)
+                self.process_view.append_column(column)
+                self.columns.append(column)
 
         self.scrolled_window.add(self.process_view)
 
@@ -80,31 +118,85 @@ class ProcessesTab(Gtk.Box):
 
         css_provider = Gtk.CssProvider()
         css_provider.load_from_data(b"""
-GtkButton#end_process_button {
+GtkButton#end_process_button.suggested-action {
     background-image: none;
-    background-color: #ed333b;
+    background-color: #3d84e0;
     color: white;
     border-radius: 6px;
-    border: 1px solid #c01c28;
+    border: 1px solid #2a75d2;
 }
-GtkButton#end_process_button:active {
-    background-color: #c01c28;
+GtkButton#end_process_button.suggested-action:active {
+    background-color: #2a75d2;
 }
-GtkButton#end_process_button:hover {
-    background-color: #f03939;
+GtkButton#end_process_button.suggested-action:hover {
+    background-color: #4a90e2;
 }
-GtkButton#end_process_button:disabled {
-    background-color: #ed333b;
+GtkButton#end_process_button.suggested-action:disabled {
+    background-color: #3d84e0;
     color: white;
     opacity: 0.5;
+}
+SearchEntry.placeholder {
+    color: shade(@theme_fg_color, 0.5);
+    font-style: italic;
 }
 """)
         screen = Gdk.Screen.get_default()
         Gtk.StyleContext.add_provider_for_screen(screen, css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
+        self.on_search_focus_out(self.search_entry, None)
+
         self.initialize_cpu_tracking()
         self.update_process_list()
         self.refresh_timer = GLib.timeout_add_seconds(2, self.update_process_list)
+
+    def on_search_clicked(self, button):
+        is_visible = self.search_entry.get_visible()
+        self.search_entry.set_visible(not is_visible)
+        
+        if self.search_entry.get_visible():
+            self.search_entry.grab_focus()
+            self.on_search_focus_out(self.search_entry, None)
+            GLib.idle_add(self.search_entry.set_position, 0)
+        else:
+            self.search_entry.set_text("")
+
+    def on_search_key_press(self, widget, event):
+        if not event.is_modifier:
+            context = widget.get_style_context()
+            if context.has_class("placeholder"):
+                context.remove_class("placeholder")
+                widget.set_text("")
+        return False
+
+    def on_search_changed(self, search_entry):
+        self.filter.refilter()
+
+    def on_search_focus_out(self, widget, event):
+        if widget.get_text() == "":
+            widget.get_style_context().add_class("placeholder")
+            widget.set_text(self.placeholder_text)
+        return False
+
+    def filter_func(self, model, iter, data):
+        search_text = self.search_entry.get_text().lower()
+        
+        context = self.search_entry.get_style_context()
+        if not search_text or context.has_class("placeholder"):
+            return True
+
+        is_header = model[iter][6]
+        if is_header:
+            child_iter = model.iter_children(iter)
+            while child_iter:
+                if self.filter_func(model, child_iter, data):
+                    return True
+                child_iter = model.iter_next(child_iter)
+            return False
+
+        name = model[iter][0].lower()
+        pid = str(model[iter][5])
+        return search_text in name or search_text in pid
 
     def initialize_cpu_tracking(self):
         for proc in psutil.process_iter(['pid']):
@@ -127,25 +219,29 @@ GtkButton#end_process_button:disabled {
 
         selected_pid = None
         model, iter = self.selection.get_selected()
-        if iter and not model[iter][6]:
-            selected_pid = model[iter][5]
+        if iter:
+            filter_iter = self.sortable_model.convert_iter_to_child_iter(iter)
+            source_iter = self.filter.convert_iter_to_child_iter(filter_iter)
+            if source_iter and not self.process_store[source_iter][6]:
+                 selected_pid = self.process_store[source_iter][5]
 
         self.process_store.clear()
 
         app_count = 0
         bg_count = 0
-        apps_iter = self.process_store.append(None, ["Apps", 0.0, "", 0.0, "", 0, True])
-        background_iter = self.process_store.append(None, ["Background processes", 0.0, "", 0.0, "", 0, True])
+        apps_iter = self.process_store.append(None, ["", 0.0, "", 0.0, "", 0, True, None, ""])
+        background_iter = self.process_store.append(None, ["", 0.0, "", 0.0, "", 0, True, None, ""])
 
         for proc in psutil.process_iter(['pid', 'name', 'memory_info']):
             try:
                 pid = proc.pid
                 name = proc.name()
+                icon_name = self.icon_manager.get_icon_for_process(name)
                 mem = proc.memory_info().rss / (1024 * 1024)
                 mem_str = f"{mem:.1f} MB"
                 cpu = proc.cpu_percent(interval=None)
                 cpu_str = f"{cpu:.1f} %"
-                row = [name, cpu, cpu_str, mem, mem_str, pid, False]
+                row = [name, cpu, cpu_str, mem, mem_str, pid, False, icon_name, ""]
                 if self.is_app(proc):
                     app_count += 1
                     self.process_store.append(apps_iter, row)
@@ -155,12 +251,19 @@ GtkButton#end_process_button:disabled {
             except:
                 pass
 
-        self.process_store.set_value(apps_iter, 0, f"Apps ({app_count})")
-        self.process_store.set_value(background_iter, 0, f"Background processes ({bg_count})")
+        if app_count > 0:
+            self.process_store.set_value(apps_iter, 8, f"<b>Apps ({app_count})</b>")
+        else:
+            self.process_store.remove(apps_iter)
+        
+        if bg_count > 0:
+            self.process_store.set_value(background_iter, 8, f"<b>Background processes ({bg_count})</b>")
+        else:
+            self.process_store.remove(background_iter)
 
-        if apps_iter:
+        if app_count > 0:
             self.process_view.expand_row(self.process_store.get_path(apps_iter), False)
-        if background_iter:
+        if bg_count > 0:
             self.process_view.expand_row(self.process_store.get_path(background_iter), False)
 
         def restore_scroll():
@@ -172,7 +275,11 @@ GtkButton#end_process_button:disabled {
             def restore_selection():
                 def search(model, path, iter, data):
                     if model[iter][5] == data:
-                        self.selection.select_iter(iter)
+                        filter_path = self.filter.convert_child_path_to_path(path)
+                        if filter_path:
+                            sort_path = self.sortable_model.convert_child_path_to_path(filter_path)
+                            if sort_path:
+                                self.selection.select_path(sort_path)
                         return True
                     return False
                 self.process_store.foreach(search, selected_pid)
@@ -183,26 +290,40 @@ GtkButton#end_process_button:disabled {
 
     def on_process_selected(self, selection):
         model, treeiter = selection.get_selected()
+        style_context = self.end_process_button.get_style_context()
+
         if treeiter is not None:
-            is_header = model.get_value(treeiter, 6)
-            self.end_process_button.set_sensitive(not is_header)
+            filter_iter = self.sortable_model.convert_iter_to_child_iter(treeiter)
+            source_iter = self.filter.convert_iter_to_child_iter(filter_iter)
+            if source_iter is not None:
+                is_header = self.process_store[source_iter][6]
+                if not is_header:
+                    self.end_process_button.set_sensitive(True)
+                    style_context.add_class("suggested-action")
+                    return
+
+        self.end_process_button.set_sensitive(False)
+        style_context.remove_class("suggested-action")
 
     def on_end_process_clicked(self, button):
         model, treeiter = self.selection.get_selected()
         if treeiter is not None:
-            pid = model.get_value(treeiter, 5)
-            try:
-                os.kill(pid, signal.SIGTERM)
-                self.update_process_list()
-            except ProcessLookupError:
-                self.update_process_list()
-            except PermissionError:
-                dialog = Gtk.MessageDialog(
-                    transient_for=self.get_toplevel(),
-                    message_type=Gtk.MessageType.ERROR,
-                    buttons=Gtk.ButtonsType.OK,
-                    text="Permission Denied"
-                )
-                dialog.format_secondary_text("You don't have permission to end this process.")
-                dialog.run()
-                dialog.destroy()
+            filter_iter = self.sortable_model.convert_iter_to_child_iter(treeiter)
+            source_iter = self.filter.convert_iter_to_child_iter(filter_iter)
+            if source_iter is not None:
+                pid = self.process_store[source_iter][5]
+                try:
+                    os.kill(pid, signal.SIGTERM)
+                    self.update_process_list()
+                except ProcessLookupError:
+                    self.update_process_list()
+                except PermissionError:
+                    dialog = Gtk.MessageDialog(
+                        transient_for=self.get_toplevel(),
+                        message_type=Gtk.MessageType.ERROR,
+                        buttons=Gtk.ButtonsType.OK,
+                        text="Permission Denied"
+                    )
+                    dialog.format_secondary_text("You don't have permission to end this process.")
+                    dialog.run()
+                    dialog.destroy()

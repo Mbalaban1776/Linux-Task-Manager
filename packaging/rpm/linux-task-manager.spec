@@ -1,5 +1,5 @@
 Name:           linux-task-manager
-Version:        0.2.3
+Version:        0.2.4
 Release:        1%{?dist}
 Summary:        A system task manager for Linux
 
@@ -97,6 +97,9 @@ fi
 /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Mon May 06 2025 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.4-1
+- Use absolute path for icon to work around caching issues
+
 * Mon May 06 2025 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.3-1
 - Renamed icon files to bypass desktop caching issues
 

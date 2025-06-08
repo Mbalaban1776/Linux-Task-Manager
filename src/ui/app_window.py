@@ -19,7 +19,6 @@ class TaskManagerWindow(Gtk.ApplicationWindow):
         # Header bar
         header = Gtk.HeaderBar()
         header.set_show_close_button(True)
-        header.props.title = "Task Manager"
         self.set_titlebar(header)
 
         self.dark_mode_button = Gtk.Button()
@@ -30,6 +29,13 @@ class TaskManagerWindow(Gtk.ApplicationWindow):
         self.dark_mode_button.set_tooltip_text("Toggle Dark Mode")
         self.dark_mode_button.connect("clicked", self.on_dark_mode_toggle)
         header.pack_end(self.dark_mode_button)
+
+        self.search_button = Gtk.Button()
+        self.search_button.set_relief(Gtk.ReliefStyle.NONE)
+        search_icon = Gtk.Image.new_from_icon_name("system-search-symbolic", Gtk.IconSize.BUTTON)
+        self.search_button.set_image(search_icon)
+        self.search_button.set_tooltip_text("Search Processes")
+        header.pack_start(self.search_button)
 
         # Main layout
         main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
@@ -43,6 +49,8 @@ class TaskManagerWindow(Gtk.ApplicationWindow):
         resources_tab = ResourcesTab()
         processes_tab = ProcessesTab()
 
+        self.search_button.connect("clicked", processes_tab.on_search_clicked)
+
         self.stack.add_titled(resources_tab, "resources", "Resources")
         self.stack.add_titled(processes_tab, "processes", "Processes")
 
@@ -50,8 +58,6 @@ class TaskManagerWindow(Gtk.ApplicationWindow):
         switcher_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
         switcher_box.get_style_context().add_class("linked")
         switcher_box.set_halign(Gtk.Align.CENTER)
-        switcher_box.set_margin_top(6)
-        switcher_box.set_margin_bottom(6)
 
         self.buttons = []
 
@@ -79,9 +85,9 @@ class TaskManagerWindow(Gtk.ApplicationWindow):
         self.buttons.append(processes_button)
         switcher_box.pack_start(processes_button, False, False, 0)
 
+        header.set_custom_title(switcher_box)
+
         # Add layout to window
-        main_box.pack_start(switcher_box, False, False, 0)
-        main_box.pack_start(Gtk.Separator(), False, False, 0)
         main_box.pack_start(self.stack, True, True, 0)
 
         self.stack.connect("notify::visible-child-name", self.on_stack_changed)
@@ -108,6 +114,7 @@ class TaskManagerWindow(Gtk.ApplicationWindow):
                     btn.set_active(False)
 
     def on_stack_changed(self, stack, param):
-        visible_child = stack.get_visible_child_name()
+        visible_child_name = stack.get_visible_child_name()
+        self.search_button.set_visible(visible_child_name == "processes")
         for index, name in enumerate(["resources", "processes"]):
-            self.buttons[index].set_active(visible_child == name)
+            self.buttons[index].set_active(visible_child_name == name)
