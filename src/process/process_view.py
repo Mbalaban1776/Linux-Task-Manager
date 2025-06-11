@@ -33,7 +33,7 @@ class ProcessesTab(Gtk.Box):
         self.scrolled_window.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         self.pack_start(self.scrolled_window, True, True, 0)
 
-        self.process_store = Gtk.TreeStore(str, float, str, float, str, int, bool, str, str)
+        self.process_store = Gtk.TreeStore(str, float, str, float, str, int, int, bool, str, str)
         self.filter = self.process_store.filter_new()
         self.filter.set_visible_func(self.filter_func)
         self.sortable_model = Gtk.TreeModelSort(model=self.filter)
@@ -48,6 +48,7 @@ class ProcessesTab(Gtk.Box):
         self.columns_info = [
             ("Name", 0),
             ("PID", 5),
+            ("Threads", 6),
             ("CPU %", 2),
             ("Memory", 4)
         ]
@@ -63,14 +64,14 @@ class ProcessesTab(Gtk.Box):
                 col.pack_start(text_renderer, True)
                 
                 def name_cell_data_func(column, cell, model, iter, data):
-                    is_header = model.get_value(iter, 6)
+                    is_header = model.get_value(iter, 7)
                     if is_header:
-                        text_renderer.set_property("markup", model.get_value(iter, 8))
+                        text_renderer.set_property("markup", model.get_value(iter, 9))
                         pixbuf_renderer.set_property("icon-name", None)
                     else:
                         text_renderer.set_property("markup", "")
                         text_renderer.set_property("text", model.get_value(iter, 0))
-                        pixbuf_renderer.set_property("icon-name", model.get_value(iter, 7))
+                        pixbuf_renderer.set_property("icon-name", model.get_value(iter, 8))
 
                 col.set_cell_data_func(text_renderer, name_cell_data_func)
                 
@@ -82,7 +83,7 @@ class ProcessesTab(Gtk.Box):
 
                 def make_cell_data_func(col_id):
                     def cell_data_func(column, cell, model, iter, data=None):
-                        is_header = model[iter][6]
+                        is_header = model[iter][7]
                         if is_header:
                             cell.set_property("text", "")
                         else:
@@ -99,6 +100,8 @@ class ProcessesTab(Gtk.Box):
                     column.set_sort_column_id(3)
                 elif title == "PID":
                     column.set_sort_column_id(5)
+                elif title == "Threads":
+                    column.set_sort_column_id(6)
 
                 column.set_resizable(True)
                 column.set_expand(True)
@@ -185,7 +188,7 @@ SearchEntry.placeholder {
         if not search_text or context.has_class("placeholder"):
             return True
 
-        is_header = model[iter][6]
+        is_header = model[iter][7]
         if is_header:
             child_iter = model.iter_children(iter)
             while child_iter:
@@ -222,26 +225,27 @@ SearchEntry.placeholder {
         if iter:
             filter_iter = self.sortable_model.convert_iter_to_child_iter(iter)
             source_iter = self.filter.convert_iter_to_child_iter(filter_iter)
-            if source_iter and not self.process_store[source_iter][6]:
+            if source_iter and not self.process_store[source_iter][7]:
                  selected_pid = self.process_store[source_iter][5]
 
         self.process_store.clear()
 
         app_count = 0
         bg_count = 0
-        apps_iter = self.process_store.append(None, ["", 0.0, "", 0.0, "", 0, True, None, ""])
-        background_iter = self.process_store.append(None, ["", 0.0, "", 0.0, "", 0, True, None, ""])
+        apps_iter = self.process_store.append(None, ["", 0.0, "", 0.0, "", 0, 0, True, None, ""])
+        background_iter = self.process_store.append(None, ["", 0.0, "", 0.0, "", 0, 0, True, None, ""])
 
         for proc in psutil.process_iter(['pid', 'name', 'memory_info']):
             try:
                 pid = proc.pid
                 name = proc.name()
+                threads = proc.num_threads()
                 icon_name = self.icon_manager.get_icon_for_process(name)
                 mem = proc.memory_info().rss / (1024 * 1024)
                 mem_str = f"{mem:.1f} MB"
                 cpu = proc.cpu_percent(interval=None)
                 cpu_str = f"{cpu:.1f} %"
-                row = [name, cpu, cpu_str, mem, mem_str, pid, False, icon_name, ""]
+                row = [name, cpu, cpu_str, mem, mem_str, pid, threads, False, icon_name, ""]
                 if self.is_app(proc):
                     app_count += 1
                     self.process_store.append(apps_iter, row)
@@ -252,12 +256,12 @@ SearchEntry.placeholder {
                 pass
 
         if app_count > 0:
-            self.process_store.set_value(apps_iter, 8, f"<b>Apps ({app_count})</b>")
+            self.process_store.set_value(apps_iter, 9, f"<b>Apps ({app_count})</b>")
         else:
             self.process_store.remove(apps_iter)
         
         if bg_count > 0:
-            self.process_store.set_value(background_iter, 8, f"<b>Background processes ({bg_count})</b>")
+            self.process_store.set_value(background_iter, 9, f"<b>Background processes ({bg_count})</b>")
         else:
             self.process_store.remove(background_iter)
 
@@ -296,7 +300,7 @@ SearchEntry.placeholder {
             filter_iter = self.sortable_model.convert_iter_to_child_iter(treeiter)
             source_iter = self.filter.convert_iter_to_child_iter(filter_iter)
             if source_iter is not None:
-                is_header = self.process_store[source_iter][6]
+                is_header = self.process_store[source_iter][7]
                 if not is_header:
                     self.end_process_button.set_sensitive(True)
                     style_context.add_class("suggested-action")
