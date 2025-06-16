@@ -1,6 +1,6 @@
 Name:           linux-task-manager
-Version:        0.3.0
-Release:        3%{?dist}
+Version:        0.4.0
+Release:        1%{?dist}
 Summary:        A system task manager for Linux
 
 License:        MIT
@@ -97,6 +97,12 @@ fi
 /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Fri Jun 14 2024 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.4.0-1
+- Overhauled application identification for modern desktop environments.
+- Renamed .desktop file to match the GtkApplication ID, ensuring robust
+  icon and name association.
+- Removed legacy WM_CLASS workarounds in favor of the standard method.
+
 * Thu Jun 13 2024 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.3.0-3
 - Renamed .desktop file to match application ID for modern desktop integration.
 
