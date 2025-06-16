@@ -9,6 +9,7 @@ class TaskManagerWindow(Gtk.ApplicationWindow):
     def __init__(self, app):
         Gtk.ApplicationWindow.__init__(self, application=app, title="Linux Task Manager")
         self.set_default_size(800, 600)
+        self.set_icon_name("ltm-icon")
         self.maximize()
 
         # Enable dark mode by default

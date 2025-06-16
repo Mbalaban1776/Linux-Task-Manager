@@ -9,6 +9,7 @@ from ui.app_window import TaskManagerWindow
 def main():
     # Initialize the application
     app = Gtk.Application(application_id="com.yourusername.taskmanager")
+    GLib.set_application_name("Linux Task Manager")
     
     def on_activate(app):
         # Create the main window when the app activates
