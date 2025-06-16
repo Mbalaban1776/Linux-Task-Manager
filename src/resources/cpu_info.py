@@ -31,7 +31,7 @@ _dynamic_info_cache = {}
 
 def update_dynamic_info():
     global _dynamic_info_cache
-    utilization = psutil.cpu_percent(interval=None)
+    utilization = psutil.cpu_percent(interval=None, percpu=False)
     speed = psutil.cpu_freq().current / 1000
     processes = len(psutil.pids())
     

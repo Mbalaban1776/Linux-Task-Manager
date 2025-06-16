@@ -55,13 +55,13 @@ class ProcessesTab(Gtk.Box):
 
         for title, col_id in self.columns_info:
             if title == "Name":
-                col = Gtk.TreeViewColumn(title)
+                column = Gtk.TreeViewColumn(title)
                 
                 pixbuf_renderer = Gtk.CellRendererPixbuf()
-                col.pack_start(pixbuf_renderer, False)
+                column.pack_start(pixbuf_renderer, False)
                 
                 text_renderer = Gtk.CellRendererText()
-                col.pack_start(text_renderer, True)
+                column.pack_start(text_renderer, True)
                 
                 def name_cell_data_func(column, cell, model, iter, data):
                     is_header = model.get_value(iter, 7)
@@ -73,10 +73,8 @@ class ProcessesTab(Gtk.Box):
                         text_renderer.set_property("text", model.get_value(iter, 0))
                         pixbuf_renderer.set_property("icon-name", model.get_value(iter, 8))
 
-                col.set_cell_data_func(text_renderer, name_cell_data_func)
+                column.set_cell_data_func(text_renderer, name_cell_data_func)
                 
-                self.process_view.append_column(col)
-                self.columns.append(col)
             else:
                 renderer = Gtk.CellRendererText()
                 column = Gtk.TreeViewColumn(title, renderer)
@@ -103,10 +101,10 @@ class ProcessesTab(Gtk.Box):
                 elif title == "Threads":
                     column.set_sort_column_id(6)
 
-                column.set_resizable(True)
-                column.set_expand(True)
-                self.process_view.append_column(column)
-                self.columns.append(column)
+            column.set_resizable(True)
+            column.set_expand(True)
+            self.process_view.append_column(column)
+            self.columns.append(column)
 
         self.scrolled_window.add(self.process_view)
 
@@ -149,6 +147,7 @@ SearchEntry.placeholder {
 
         self.on_search_focus_out(self.search_entry, None)
 
+        self.num_cpus = psutil.cpu_count() or 1
         self.initialize_cpu_tracking()
         self.update_process_list()
         self.refresh_timer = GLib.timeout_add_seconds(2, self.update_process_list)
@@ -235,15 +234,24 @@ SearchEntry.placeholder {
         apps_iter = self.process_store.append(None, ["", 0.0, "", 0.0, "", 0, 0, True, None, ""])
         background_iter = self.process_store.append(None, ["", 0.0, "", 0.0, "", 0, 0, True, None, ""])
 
-        for proc in psutil.process_iter(['pid', 'name', 'memory_info']):
+        for proc in psutil.process_iter(['pid', 'name', 'num_threads']):
             try:
                 pid = proc.pid
                 name = proc.name()
                 threads = proc.num_threads()
                 icon_name = self.icon_manager.get_icon_for_process(name)
-                mem = proc.memory_info().rss / (1024 * 1024)
+                
+                try:
+                    # memory_full_info() is only available on Linux and provides 'uss'
+                    mem_info = proc.memory_full_info()
+                    mem = mem_info.uss / (1024 * 1024)  # Unique Set Size
+                except AttributeError:
+                    # Fallback for other systems or older psutil versions
+                    mem_info = proc.memory_info()
+                    mem = mem_info.rss / (1024 * 1024)   # Resident Set Size
+                
                 mem_str = f"{mem:.1f} MB"
-                cpu = proc.cpu_percent(interval=None)
+                cpu = proc.cpu_percent(interval=None) / self.num_cpus
                 cpu_str = f"{cpu:.1f} %"
                 row = [name, cpu, cpu_str, mem, mem_str, pid, threads, False, icon_name, ""]
                 if self.is_app(proc):
@@ -316,18 +324,18 @@ SearchEntry.placeholder {
             source_iter = self.filter.convert_iter_to_child_iter(filter_iter)
             if source_iter is not None:
                 pid = self.process_store[source_iter][5]
-                try:
-                    os.kill(pid, signal.SIGTERM)
-                    self.update_process_list()
-                except ProcessLookupError:
-                    self.update_process_list()
-                except PermissionError:
-                    dialog = Gtk.MessageDialog(
-                        transient_for=self.get_toplevel(),
-                        message_type=Gtk.MessageType.ERROR,
-                        buttons=Gtk.ButtonsType.OK,
-                        text="Permission Denied"
-                    )
-                    dialog.format_secondary_text("You don't have permission to end this process.")
-                    dialog.run()
-                    dialog.destroy()
+            try:
+                os.kill(pid, signal.SIGTERM)
+                self.update_process_list()
+            except ProcessLookupError:
+                self.update_process_list()
+            except PermissionError:
+                dialog = Gtk.MessageDialog(
+                    transient_for=self.get_toplevel(),
+                    message_type=Gtk.MessageType.ERROR,
+                    buttons=Gtk.ButtonsType.OK,
+                    text="Permission Denied"
+                )
+                dialog.format_secondary_text("You don't have permission to end this process.")
+                dialog.run()
+                dialog.destroy()

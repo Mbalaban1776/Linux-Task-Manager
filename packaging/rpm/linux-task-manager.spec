@@ -1,5 +1,5 @@
 Name:           linux-task-manager
-Version:        0.2.5
+Version:        0.2.7
 Release:        1%{?dist}
 Summary:        A system task manager for Linux
 
@@ -97,6 +97,19 @@ fi
 /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Wed May 08 2025 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.7-1
+- Corrected CPU usage to be system-wide instead of per-core.
+- Corrected memory usage to report Unique Set Size (USS) for accuracy.
+- Aligned resource graphs with the new, more accurate data calculations.
+- Fixed a crash related to inconsistent variable use in the process view.
+
+* Wed May 08 2025 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.6-1
+- Implemented a comprehensive memory monitoring view similar to Windows.
+- Added a memory usage history graph and a composition bar.
+- Included detailed memory statistics like "In use," "Available," and "Cached."
+- Fixed a bug causing crashes when processes terminated during data collection.
+- Added percentage labels to the CPU usage graph for better readability.
+
 * Tue May 07 2025 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.5-1
 - Added process search functionality with a new search bar.
 - Implemented process icon display for better visual identification.
