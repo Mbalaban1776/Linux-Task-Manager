@@ -1,6 +1,6 @@
 Name:           linux-task-manager
 Version:        0.3.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A system task manager for Linux
 
 License:        MIT
@@ -48,7 +48,7 @@ install -m 755 src/linux-task-manager %{buildroot}%{_bindir}/%{name}
 cp -r src/* %{buildroot}%{_datadir}/%{name}/
 
 # Install the desktop file
-desktop-file-install --dir=%{buildroot}%{_datadir}/applications packaging/linux-task-manager.desktop
+desktop-file-install --dir=%{buildroot}%{_datadir}/applications packaging/com.github.Mbalaban1776.Linux-Task-Manager.desktop
 
 # Install AppStream metadata
 install -m 644 packaging/linux-task-manager.appdata.xml %{buildroot}%{_datadir}/metainfo/%{name}.appdata.xml
@@ -64,14 +64,14 @@ install -m 644 assets/icons/hicolor/128x128/apps/ltm-icon.png %{buildroot}%{_dat
 install -m 644 assets/icons/hicolor/256x256/apps/ltm-icon.png %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/ltm-icon.png
 
 %check
-desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
+desktop-file-validate %{buildroot}%{_datadir}/applications/com.github.Mbalaban1776.Linux-Task-Manager.desktop
 appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/%{name}.appdata.xml
 
 %files
 %license LICENSE
 %{_bindir}/%{name}
 %{_datadir}/%{name}
-%{_datadir}/applications/%{name}.desktop
+%{_datadir}/applications/com.github.Mbalaban1776.Linux-Task-Manager.desktop
 %{_datadir}/metainfo/%{name}.appdata.xml
 %{_datadir}/icons/hicolor/scalable/apps/ltm-icon.svg
 %{_datadir}/icons/hicolor/16x16/apps/ltm-icon.png
@@ -97,6 +97,9 @@ fi
 /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Thu Jun 13 2024 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.3.0-3
+- Renamed .desktop file to match application ID for modern desktop integration.
+
 * Thu Jun 13 2024 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.3.0-2
 - Explicitly set WM_CLASS to fix desktop environment integration.
 
