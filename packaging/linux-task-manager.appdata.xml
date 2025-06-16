@@ -21,6 +21,7 @@
       <li>Responsive UI design</li>
     </ul>
   </description>
+  <icon type="local">ltm-icon</icon>
   <launchable type="desktop-id">linux-task-manager.desktop</launchable>
   <screenshots>
     <screenshot type="default">
