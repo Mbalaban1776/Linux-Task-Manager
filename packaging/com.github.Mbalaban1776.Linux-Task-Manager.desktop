@@ -9,4 +9,4 @@ Icon=ltm-icon
 Terminal=false
 Categories=System;Monitor;Utility;GTK;
 Keywords=system;process;task;monitor;cpu;memory;
-StartupNotify=true 
+StartupNotify=true
