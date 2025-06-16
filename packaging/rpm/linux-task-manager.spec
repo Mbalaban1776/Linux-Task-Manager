@@ -101,20 +101,20 @@ fi
 - Added screenshot for software center.
 - Fixed icon display issues in software center.
 
-* Wed May 08 2025 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.7-1
+* Wed May 08 2024 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.7-1
 - Corrected CPU usage to be system-wide instead of per-core.
 - Corrected memory usage to report Unique Set Size (USS) for accuracy.
 - Aligned resource graphs with the new, more accurate data calculations.
 - Fixed a crash related to inconsistent variable use in the process view.
 
-* Wed May 08 2025 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.6-1
+* Wed May 08 2024 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.6-1
 - Implemented a comprehensive memory monitoring view similar to Windows.
 - Added a memory usage history graph and a composition bar.
 - Included detailed memory statistics like "In use," "Available," and "Cached."
 - Fixed a bug causing crashes when processes terminated during data collection.
 - Added percentage labels to the CPU usage graph for better readability.
 
-* Tue May 07 2025 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.5-1
+* Tue May 07 2024 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.5-1
 - Added process search functionality with a new search bar.
 - Implemented process icon display for better visual identification.
 - Redesigned header to integrate search and tab switching for a cleaner UI.
@@ -122,19 +122,19 @@ fi
 - Fixed a critical bug preventing sorting of processes by CPU, PID, and Memory.
 - Polished UI details, including button colors and search bar placeholder behavior.
 
-* Mon May 06 2025 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.4-1
+* Mon May 06 2024 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.4-1
 - Use absolute path for icon to work around caching issues
 
-* Mon May 06 2025 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.3-1
+* Mon May 06 2024 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.3-1
 - Renamed icon files to bypass desktop caching issues
 
-* Sun May 05 2025 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.2-1
+* Sun May 05 2024 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.2-1
 - Force icon update attempt
 
-* Sun May 05 2025 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.1-1
+* Sun May 05 2024 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.1-1
 - Updated application icon
 
-* Sun May 04 2025 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.0-1
+* Sun May 04 2024 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.0-1
 - Added dark mode toggle
 - Added icons to navigation tabs
 - Made End Process button red with white text
@@ -142,5 +142,5 @@ fi
 - Fixed CPU usage display
 - Enhanced UI responsiveness
 
-* Sat May 03 2025 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.1.0-1
+* Sat May 03 2024 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.1.0-1
 - Initial package
