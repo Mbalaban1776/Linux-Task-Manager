@@ -1,5 +1,5 @@
 Name:           linux-task-manager
-Version:        0.2.8
+Version:        0.2.9
 Release:        1%{?dist}
 Summary:        A system task manager for Linux
 
@@ -97,6 +97,9 @@ fi
 /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Wed Jun 12 2024 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.9-1
+- Set application name and window icon correctly.
+
 * Wed Jun 12 2024 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.8-1
 - Added screenshot for software center.
 - Fixed icon display issues in software center.
