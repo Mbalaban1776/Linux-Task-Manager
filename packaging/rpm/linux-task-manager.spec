@@ -1,6 +1,6 @@
 Name:           linux-task-manager
 Version:        0.3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A system task manager for Linux
 
 License:        MIT
@@ -97,6 +97,9 @@ fi
 /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Thu Jun 13 2024 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.3.0-2
+- Explicitly set WM_CLASS to fix desktop environment integration.
+
 * Wed Jun 12 2024 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.3.0-1
 - Set a unique application ID and added StartupWMClass to the desktop file.
 - This should improve application identification for the desktop environment.
