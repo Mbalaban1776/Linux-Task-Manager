@@ -1,5 +1,5 @@
 Name:           linux-task-manager
-Version:        0.4.0
+Version:        0.4.1
 Release:        1%{?dist}
 Summary:        A system task manager for Linux
 
@@ -97,6 +97,9 @@ fi
 /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Fri Jun 21 2024 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.4.1-1
+- New feature or bug fix to be described here.
+
 * Fri Jun 14 2024 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.4.0-1
 - Overhauled application identification for modern desktop environments.
 - Renamed .desktop file to match the GtkApplication ID, ensuring robust
@@ -153,7 +156,7 @@ fi
 * Sun May 05 2024 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.1-1
 - Updated application icon
 
-* Sun May 04 2024 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.0-1
+* Sat May 04 2024 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.2.0-1
 - Added dark mode toggle
 - Added icons to navigation tabs
 - Made End Process button red with white text
@@ -161,5 +164,5 @@ fi
 - Fixed CPU usage display
 - Enhanced UI responsiveness
 
-* Sat May 03 2024 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.1.0-1
+* Fri May 03 2024 Mustafa Balaban <mustafabalaban46@gmail.com> - 0.1.0-1
 - Initial package
