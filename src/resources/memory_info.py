@@ -1,10 +1,10 @@
 import psutil
 
 def bytes_to_gb(b):
-    return b / (1024**3)
+    return b / (1000**3)
 
 def bytes_to_mb(b):
-    return b / (1024**2)
+    return b / (1000**2)
 
 def get_static_memory_info():
     mem = psutil.virtual_memory()
@@ -21,13 +21,15 @@ def update_dynamic_memory_info():
     mem = psutil.virtual_memory()
     swap = psutil.swap_memory()
 
+    used_mem = mem.total - mem.available
+
     _dynamic_info_cache = {
-        "In use": f"{bytes_to_gb(mem.used):.1f} GB",
+        "In use": f"{bytes_to_gb(used_mem):.1f} GB",
         "Available": f"{bytes_to_gb(mem.available):.1f} GB",
-        "Committed": f"{bytes_to_gb(mem.used + swap.used):.1f}",
+        "Committed": f"{bytes_to_gb(used_mem + swap.used):.1f}",
         "Cached": f"{bytes_to_gb(mem.cached):.1f} GB",
         "percent": mem.percent,
-        "composition_used": mem.used,
+        "composition_used": used_mem,
         "composition_cached": mem.cached,
         "composition_buffers": getattr(mem, 'buffers', 0),
         "composition_free": mem.free,
